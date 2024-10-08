@@ -1,45 +1,44 @@
-let selectedBikes = [];
-const maxBikes = 4;
-const bikeData = {
-    "Honda CBR600RR": { power: "120 HP", weight: "194 kg", engine: "599 cc", type: "Sport" },
-    "Yamaha R1": { power: "200 HP", weight: "200 kg", engine: "998 cc", type: "Sport" },
-    "Kawasaki Ninja ZX-10R": { power: "203 HP", weight: "207 kg", engine: "998 cc", type: "Sport" },
-    "Ducati Panigale V4": { power: "214 HP", weight: "198 kg", engine: "1103 cc", type: "SuperSport" }
-};
+// app.js
 
-const searchInput = document.getElementById('search-bar');
-const addButton = document.getElementById('add-bike');
-const comparisonTableBody = document.getElementById('bike-specs');
+const bikes = [
+    "Honda CBR500R",
+    "Kawasaki Ninja 650",
+    "Yamaha YZF-R3",
+    "KTM RC 390",
+    "BMW S1000RR",
+    "Suzuki GSX-R750",
+    "Ducati Panigale V2",
+    "Triumph Street Triple",
+    "Harley Davidson Sportster",
+    "Kawasaki Z900"
+];
 
-// Autocomplete functionality (simple version)
-searchInput.addEventListener('input', function () {
-    let inputVal = searchInput.value.toLowerCase();
-    let matches = Object.keys(bikeData).filter(bike => bike.toLowerCase().includes(inputVal));
-    console.log(matches); // Optional: Display suggestions here.
-});
+const searchInput = document.getElementById('search');
+const suggestionsContainer = document.getElementById('suggestions');
 
-// Add bike to comparison
-addButton.addEventListener('click', function () {
-    const bikeModel = searchInput.value;
-    if (bikeData[bikeModel] && selectedBikes.length < maxBikes) {
-        selectedBikes.push(bikeModel);
-        updateComparisonTable();
-    } else {
-        alert("Invalid bike model or maximum bikes reached!");
-    }
-    searchInput.value = ''; // Clear input field
-});
+searchInput.addEventListener('input', function() {
+    const query = this.value.toLowerCase();
+    suggestionsContainer.innerHTML = ''; // Clear previous suggestions
 
-// Update the comparison table
-function updateComparisonTable() {
-    comparisonTableBody.innerHTML = '';
-    const attributes = ["power", "weight", "engine", "type"];
-    attributes.forEach(attr => {
-        let row = `<tr><td>${attr}</td>`;
-        selectedBikes.forEach(bike => {
-            row += `<td>${bikeData[bike][attr]}</td>`;
+    if (query) {
+        // Filter the bike models based on user input
+        const suggestions = bikes.filter(bike => bike.toLowerCase().includes(query));
+
+        suggestions.forEach(suggestion => {
+            const div = document.createElement('div');
+            div.textContent = suggestion; // Set the suggestion text
+            div.addEventListener('click', () => {
+                searchInput.value = suggestion; // Set the input to the clicked suggestion
+                suggestionsContainer.innerHTML = ''; // Clear suggestions after selection
+            });
+            suggestionsContainer.appendChild(div); // Add suggestion to the container
         });
-        row += '</tr>';
-        comparisonTableBody.innerHTML += row;
-    });
-}
+    }
+});
+
+// Optional: Close suggestions when clicking outside
+document.addEventListener('click', (e) => {
+    if (!searchInput.contains(e.target)) {
+        suggestionsContainer.innerHTML = ''; // Clear suggestions
+    }
+});
